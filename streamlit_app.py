@@ -178,7 +178,7 @@ EVENT_TAGS = [
 
 @st.cache_resource
 def load_model(name, device):
-    with st.status(f"🚀 Initializing {name}...", expanded=True) as status:
+    with st.status(f"Initializing {name}...", expanded=True) as status:
         # Use None if no token is provided to avoid LocalTokenNotFoundError
         token = os.getenv("HF_TOKEN") or None
         map_location = torch.device('cpu') if device in ["cpu", "mps"] else None
@@ -216,7 +216,7 @@ def load_model(name, device):
                 if hasattr(t3.tfmr, 'wte'):
                     del t3.tfmr.wte
 
-                st.write("⚡ Moving T3 weights to GPU...")
+                st.write("Moving T3 weights to GPU...")
                 t3.to(device).eval()
 
                 st.write("🎙️ Preparing S3 Generator...")
@@ -425,7 +425,7 @@ with col2:
                     if model_name == "Chatterbox (Multilingual)":
                         kwargs["language_id"] = "en" # Default to English for demo
 
-                    st.write("⚡ Generating tokens and waveform...")
+                    st.write("Generating tokens and waveform...")
                     wav = model.generate(input_text, **kwargs)
 
                     if temp_ref_path:
