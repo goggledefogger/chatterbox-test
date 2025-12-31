@@ -330,7 +330,6 @@ def load_model(name, device):
 
 # --- Sidebar ---
 with st.sidebar:
-    st.image("Chatterbox-Turbo.jpg", use_container_width=True)
     st.markdown("### Model Selection")
     model_name = st.selectbox("Choose Model", list(MODELS.keys()), index=0)
 
