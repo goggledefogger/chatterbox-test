@@ -2,7 +2,7 @@
 
 **Chatterbox Studio** is a high-performance, developer-friendly Streamlit interface for state-of-the-art open-source Text-to-Speech models.
 
-This project is maintained by **[Danny (goggledefogger)](https://github.com/goggledefogger)** and is powered by the **[Chatterbox](https://github.com/resemble-ai/chatterbox)** library by **[Resemble AI](https://resemble.ai)**.
+This project is powered by the **[Chatterbox](https://github.com/resemble-ai/chatterbox)** library by **[Resemble AI](https://resemble.ai)**.
 
 It provides an intuitive workspace to test, tweak, and integrate the Chatterbox family of models (Turbo, English, and Multilingual) with native support for paralinguistic tags and voice cloning.
 
@@ -56,6 +56,7 @@ streamlit run streamlit_app.py
 
 This project would not be possible without the incredible open-source work by:
 - **[Resemble AI](https://resemble.ai)** for the **[Chatterbox](https://github.com/resemble-ai/chatterbox)** models and library.
+- **[Streamlit](https://streamlit.io)** for the powerful web application framework.
 - **[Hugging Face](https://huggingface.co)** for hosting the model weights and `transformers` ecosystem.
 
 ---
