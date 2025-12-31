@@ -1,3 +1,10 @@
+# 📚 Chatterbox Core Library
+
+> [!NOTE]
+> This file contains the original documentation for the [Chatterbox](https://github.com/resemble-ai/chatterbox) library by Resemble AI. This library is used as the core dependency for **Chatterbox Studio**.
+
+---
+
 ![Chatterbox Turbo Image](./Chatterbox-Turbo.jpg)
 
 
@@ -100,7 +107,7 @@ ta.save("test-2.wav", wav, model.sr)
 ```
 See `example_tts.py` and `example_vc.py` for more examples.
 
-## Supported Languages 
+## Supported Languages
 Arabic (ar) • Danish (da) • German (de) • Greek (el) • English (en) • Spanish (es) • Finnish (fi) • French (fr) • Hebrew (he) • Hindi (hi) • Italian (it) • Japanese (ja) • Korean (ko) • Malay (ms) • Dutch (nl) • Norwegian (no) • Polish (pl) • Portuguese (pt) • Russian (ru) • Swedish (sv) • Swahili (sw) • Turkish (tr) • Chinese (zh)
 
 ## Original Chatterbox Tips
