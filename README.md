@@ -1,24 +1,24 @@
-# ⚡ Chatterbox Studio
+# Chatterbox Studio
 
-**Chatterbox Studio** is a high-performance, developer-friendly Streamlit interface for state-of-the-art open-source Text-to-Speech models.
+**Chatterbox Studio** is a Streamlit interface for open-source Text-to-Speech models.
 
 This project is powered by the **[Chatterbox](https://github.com/resemble-ai/chatterbox)** library by **[Resemble AI](https://resemble.ai)**.
 
-It provides an intuitive workspace to test, tweak, and integrate the Chatterbox family of models (Turbo, English, and Multilingual) with native support for paralinguistic tags and voice cloning.
+It provides a workspace to test and integrate the Chatterbox family of models (Turbo, English, and Multilingual) with support for paralinguistic tags and voice cloning.
 
-## 🚀 Key Features
+## Key Features
 
-- **Chatterbox-Turbo Native Support**: Effortlessly use paralinguistic tags like `[chuckle]`, `[sigh]`, and `[cough]`.
-- **Granular Progress Tracking**: Real-time feedback during model loading and audio synthesis directly in the UI.
-- **Hugging Face Integration**: Secure token input with real-time download progress.
-- **Voice Cloning**: Zero-shot cloning using standard WAV/MP3 reference audio.
-- **M1/M2/M3 Optimized**: Leveraging Metal Performance Shaders (MPS) for lightning-fast inference on Apple Silicon.
+- **Chatterbox-Turbo Support**: Use paralinguistic tags like `[chuckle]`, `[sigh]`, and `[cough]`.
+- **Progress Tracking**: Functional feedback during model loading and audio synthesis directly in the UI.
+- **Hugging Face Integration**: Token input with real-time download progress.
+- **Voice Cloning**: Zero-shot cloning using WAV/MP3 reference audio.
+- **Apple Silicon Support**: Uses Metal Performance Shaders (MPS) for inference on Mac.
 
 ---
 
-## 🛠️ Development Setup
+## Development Setup
 
-We recommend using [uv](https://github.com/astral-sh/uv) for fast, reliable package management.
+We recommend using [uv](https://github.com/astral-sh/uv) for package management.
 
 ### 1. Clone the repository
 ```bash
@@ -44,19 +44,19 @@ streamlit run streamlit_app.py
 
 ---
 
-## 📖 Development Guidelines
+## Development Guidelines
 
-- **Environment**: Developed and tested on Python 3.11.
-- **Model Loading**: Models are cached using `@st.cache_resource` to prevent redundant memory allocation.
-- **Architecture**: The app uses a robust, thread-safe progress tracking system (`StreamlitTqdm`) that monkeypatches `tqdm` to capture all backend library status updates.
+- **Environment**: Tested on Python 3.11.
+- **Model Loading**: Models are cached using `@st.cache_resource` to manage memory.
+- **Architecture**: Uses `StreamlitTqdm` to monkeypatch `tqdm` for capturing library status updates.
 
 ---
 
 ## 🙏 Credits
 
-This project would not be possible without the incredible open-source work by:
+This project uses work by:
 - **[Resemble AI](https://resemble.ai)** for the **[Chatterbox](https://github.com/resemble-ai/chatterbox)** models and library.
-- **[Streamlit](https://streamlit.io)** for the powerful web application framework.
+- **[Streamlit](https://streamlit.io)** for the application framework.
 - **[Hugging Face](https://huggingface.co)** for hosting the model weights and `transformers` ecosystem.
 
 ---

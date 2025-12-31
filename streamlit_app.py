@@ -5,7 +5,7 @@ import threading
 # Page configuration (MUST be first Streamlit command)
 st.set_page_config(
     page_title="Chatterbox Studio",
-    page_icon="⚡",
+    page_icon="🎙️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -355,7 +355,7 @@ with st.sidebar:
 
 # --- Main App ---
 st.markdown('<p class="main-header">Chatterbox Studio</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">State-of-the-Art Open Source TTS by Resemble AI</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-header">Open Source TTS by Resemble AI</p>', unsafe_allow_html=True)
 
 col1, col2 = st.columns([2, 1])
 
@@ -384,13 +384,13 @@ with col1:
 with col2:
     st.markdown("### Output")
     output_area = st.empty()
-    if st.button("Generate Audio ⚡", type="primary", use_container_width=True):
+    if st.button("Generate Audio", type="primary", use_container_width=True):
         st.session_state.current_audio = None
         if not input_text:
             st.error("Please enter some text!")
         else:
             # We use a status block for synthesis as well
-            with st.status("🎬 Starting synthesis...", expanded=True) as status:
+            with st.status("Synthesizing...", expanded=True) as status:
                 st.write("🧠 Loading model...")
                 model = load_model(model_name, DEVICE)
 
@@ -432,7 +432,7 @@ with col2:
                         os.unlink(temp_ref_path)
 
                     end_time = time.time()
-                    status.update(label=f"✨ Done in {end_time - start_time:.2f}s!", state="complete", expanded=False)
+                    status.update(label=f"Completed in {end_time - start_time:.2f}s", state="complete", expanded=False)
 
                     # Store in session state
                     st.session_state.current_audio = (model.sr, wav.squeeze(0).cpu().numpy())
@@ -454,4 +454,4 @@ with col2:
 
 add_vertical_space(5)
 st.markdown("---")
-st.markdown("Built with ❤️ using [Chatterbox](https://github.com/resemble-ai/chatterbox) by Resemble AI.")
+st.markdown("Using [Chatterbox](https://github.com/resemble-ai/chatterbox) by Resemble AI.")
