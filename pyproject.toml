@@ -1,0 +1,32 @@
+[project]
+name = "chatterbox-studio"
+version = "0.1.0"
+description = "Chatterbox Studio: A high-performance Streamlit UI for Resemble AI Chatterbox"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Danny"}
+]
+dependencies = [
+    "chatterbox-tts>=0.1.6",
+    "streamlit>=1.41.1",
+    "streamlit-extras>=0.5.2",
+    "torch>=2.4.0",
+    "torchaudio>=2.4.0",
+    "transformers",
+    "numpy",
+    "pyloudnorm",
+    "librosa"
+]
+
+[project.urls]
+Homepage = "https://github.com/resemble-ai/chatterbox"
+Repository = "https://github.com/resemble-ai/chatterbox"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
