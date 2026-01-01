@@ -94,6 +94,7 @@ import numpy as np
 import tempfile
 import os
 import time
+import gc
 from pathlib import Path
 from huggingface_hub import snapshot_download, hf_hub_download
 from chatterbox.tts_turbo import ChatterboxTurboTTS
@@ -111,6 +112,7 @@ from streamlit_extras.stylable_container import stylable_container
 
 # Device detection
 DEVICE = "mps" if torch.backends.mps.is_available() else ("cuda" if torch.cuda.is_available() else "cpu")
+DTYPE = torch.float16 if DEVICE in ["cuda", "mps"] else torch.float32
 
 # --- Custom Styling ---
 st.markdown("""
@@ -176,8 +178,15 @@ EVENT_TAGS = [
     "[sniff]", "[gasp]", "[chuckle]", "[laugh]"
 ]
 
-@st.cache_resource
+@st.cache_resource(max_entries=1)
 def load_model(name, device):
+    # Clear existing memory before loading a new model
+    gc.collect()
+    if device == "cuda":
+        torch.cuda.empty_cache()
+    elif device == "mps":
+        torch.mps.empty_cache()
+
     with st.status(f"Initializing {name}...", expanded=True) as status:
         # Use None if no token is provided to avoid LocalTokenNotFoundError
         token = os.getenv("HF_TOKEN") or None
@@ -197,7 +206,7 @@ def load_model(name, device):
                 st.write("📻 Loading Voice Encoder...")
                 ve = VoiceEncoder()
                 ve.load_state_dict(load_safetensors(ckpt_dir / "ve.safetensors"))
-                ve.to(device).eval()
+                ve.to(device, dtype=DTYPE).eval()
 
                 st.write("🧠 Initializing T3 Transformer (Turbo)...")
                 hp = T3Config(text_tokens_dict_size=50276)
@@ -217,12 +226,18 @@ def load_model(name, device):
                     del t3.tfmr.wte
 
                 st.write("Moving T3 weights to GPU...")
-                t3.to(device).eval()
+                t3.to(device, dtype=DTYPE).eval()
 
                 st.write("🎙️ Preparing S3 Generator...")
                 s3gen = S3Gen(meanflow=True)
-                s3gen.load_state_dict(load_safetensors(ckpt_dir / "s3gen_meanflow.safetensors"), strict=True)
-                s3gen.to(device).eval()
+                s3gen_state = load_safetensors(ckpt_dir / "s3gen_meanflow.safetensors")
+                s3gen.load_state_dict(s3gen_state, strict=True)
+                s3gen.to(device, dtype=DTYPE).eval()
+
+                # Explicitly clear state dicts and collect garbage
+                del t3_state
+                del s3gen_state
+                gc.collect()
 
                 st.write("📖 Loading Tokenizer...")
                 # Turbo uses AutoTokenizer from transformers
@@ -233,7 +248,7 @@ def load_model(name, device):
                 conds = None
                 if (ckpt_dir / "conds.pt").exists():
                     from chatterbox.tts_turbo import Conditionals
-                    conds = Conditionals.load(ckpt_dir / "conds.pt", map_location=map_location).to(device)
+                    conds = Conditionals.load(ckpt_dir / "conds.pt", map_location=map_location).to(device, dtype=DTYPE)
 
                 model = ChatterboxTurboTTS(t3, s3gen, ve, tokenizer, device, conds=conds)
 
@@ -249,7 +264,7 @@ def load_model(name, device):
                 st.write("📻 Loading Voice Encoder...")
                 ve = VoiceEncoder()
                 ve.load_state_dict(load_safetensors(ckpt_dir / "ve.safetensors"))
-                ve.to(device).eval()
+                ve.to(device, dtype=DTYPE).eval()
 
                 st.write("🧠 Initializing T3 Transformer (English)...")
                 t3 = T3()
@@ -259,12 +274,18 @@ def load_model(name, device):
                 t3.load_state_dict(t3_state)
 
                 st.write("⚡ Moving T3 weights to GPU...")
-                t3.to(device).eval()
+                t3.to(device, dtype=DTYPE).eval()
 
                 st.write("🎙️ Preparing S3 Generator...")
                 s3gen = S3Gen()
-                s3gen.load_state_dict(load_safetensors(ckpt_dir / "s3gen.safetensors"), strict=False)
-                s3gen.to(device).eval()
+                s3gen_state = load_safetensors(ckpt_dir / "s3gen.safetensors")
+                s3gen.load_state_dict(s3gen_state, strict=False)
+                s3gen.to(device, dtype=DTYPE).eval()
+
+                # Explicitly clear state dicts and collect garbage
+                del t3_state
+                del s3gen_state
+                gc.collect()
 
                 st.write("📖 Loading Tokenizer...")
                 tokenizer = EnTokenizer(str(ckpt_dir / "tokenizer.json"))
@@ -272,7 +293,7 @@ def load_model(name, device):
                 conds = None
                 if (ckpt_dir / "conds.pt").exists():
                     from chatterbox.tts import Conditionals
-                    conds = Conditionals.load(ckpt_dir / "conds.pt", map_location=map_location).to(device)
+                    conds = Conditionals.load(ckpt_dir / "conds.pt", map_location=map_location).to(device, dtype=DTYPE)
 
                 model = ChatterboxTTS(t3, s3gen, ve, tokenizer, device, conds=conds)
 
@@ -291,7 +312,7 @@ def load_model(name, device):
                 st.write("📻 Loading Voice Encoder...")
                 ve = VoiceEncoder()
                 ve.load_state_dict(torch.load(ckpt_dir / "ve.pt", weights_only=True, map_location='cpu'))
-                ve.to(device).eval()
+                ve.to(device, dtype=DTYPE).eval()
 
                 st.write("🧠 Initializing T3 Transformer (Multilingual)...")
                 t3 = T3(T3Config.multilingual())
@@ -301,12 +322,18 @@ def load_model(name, device):
                 t3.load_state_dict(t3_state)
 
                 st.write("⚡ Moving T3 weights to GPU...")
-                t3.to(device).eval()
+                t3.to(device, dtype=DTYPE).eval()
 
                 st.write("🎙️ Preparing S3 Generator...")
                 s3gen = S3Gen()
-                s3gen.load_state_dict(torch.load(ckpt_dir / "s3gen.pt", weights_only=True, map_location='cpu'))
-                s3gen.to(device).eval()
+                s3gen_state = torch.load(ckpt_dir / "s3gen.pt", weights_only=True, map_location='cpu')
+                s3gen.load_state_dict(s3gen_state)
+                s3gen.to(device, dtype=DTYPE).eval()
+
+                # Explicitly clear state dicts and collect garbage
+                del t3_state
+                del s3gen_state
+                gc.collect()
 
                 st.write("📖 Loading MTL Tokenizer...")
                 tokenizer = MTLTokenizer(str(ckpt_dir / "grapheme_mtl_merged_expanded_v1.json"))
@@ -314,7 +341,7 @@ def load_model(name, device):
                 conds = None
                 if (ckpt_dir / "conds.pt").exists():
                     from chatterbox.mtl_tts import Conditionals
-                    conds = Conditionals.load(ckpt_dir / "conds.pt", map_location=map_location).to(device)
+                    conds = Conditionals.load(ckpt_dir / "conds.pt", map_location=map_location).to(device, dtype=DTYPE)
 
                 model = ChatterboxMultilingualTTS(t3, s3gen, ve, tokenizer, device, conds=conds)
 
@@ -352,6 +379,18 @@ with st.sidebar:
     else:
         exaggeration = st.slider("Exaggeration", 0.0, 1.0, 0.5, 0.1)
         cfg_weight = st.slider("CFG Weight", 0.0, 1.0, 0.5, 0.1)
+
+    st.markdown("---")
+    st.markdown("### Memory Management")
+    if st.button("🧼 Purge Memory", help="Manually clear model cache and hardware VRAM."):
+        st.cache_resource.clear()
+        gc.collect()
+        if DEVICE == "cuda":
+            torch.cuda.empty_cache()
+        elif DEVICE == "mps":
+            torch.mps.empty_cache()
+        st.success("Memory purged!")
+        st.rerun()
 
 # --- Main App ---
 st.markdown('<p class="main-header">Chatterbox Studio</p>', unsafe_allow_html=True)
